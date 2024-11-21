@@ -12,7 +12,7 @@ class SneakerProduct:
     model: str
     sku: Optional[str] = None
     retail_price: Optional[float] = None
-    current_price: Optional[float] = None
+    avg_price: Optional[float] = None
     release_date: Optional[str] = None
     
     @classmethod
@@ -20,13 +20,13 @@ class SneakerProduct:
         """Create a SneakerProduct instance from API response data"""
         return cls(
             id=data.get('id', ''),
-            name=data.get('name', ''),
+            name=data.get('title', ''),
             brand=data.get('brand', ''),
-            model=data.get('model', ''),
+            model=data.get('slug', ''),
             sku=data.get('sku'),
-            retail_price=data.get('retailPrice'),
-            current_price=data.get('currentPrice'),
-            release_date=data.get('releaseDate')
+            retail_price=data.get('retail_price'),
+            avg_price=data.get('avg_price'),
+            release_date=data.get('release_date')
         )
 
 class SneakerAPI:
@@ -71,14 +71,14 @@ class SneakerAPI:
         """
         try:
             url = f"{self.base_url}/search"
-            params = {"query": query}
-            
+            params = {"sku": query}
             response = self.session.get(url, params=params, timeout=10)
             response.raise_for_status()
             
             data = response.json()
             # Assuming the API returns a list of products in a 'results' field
-            products = data.get('results', [])
+            products = data.get('hits', [])
+            print(products)
             return [SneakerProduct.from_api_response(product) for product in products]
             
         except requests.RequestException as e:
@@ -103,8 +103,8 @@ def print_product(product: SneakerProduct) -> None:
     print(f"Model: {product.model}")
     if product.sku:
         print(f"SKU: {product.sku}")
-    print(f"Retail Price: {format_price(product.retail_price)}")
-    print(f"Current Price: {format_price(product.current_price)}")
+    print(f"Retail Price: ${product.retail_price}") #retail_price is a string
+    print(f"Average Price: {format_price(product.avg_price)}")
     if product.release_date:
         print(f"Release Date: {product.release_date}")
     print(f"Product ID: {product.id}")
@@ -123,7 +123,7 @@ def main():
             print(f"Product not found: {product_id}")
     
     # Example 2: Search for products
-    search_query = input("\nEnter search query (or press Enter to skip): ").strip()
+    search_query = input("\nEnter SKU (or press Enter to skip): ").strip()
     if search_query:
         products = api.search_products(search_query)
         if products:
