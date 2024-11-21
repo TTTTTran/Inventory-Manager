@@ -78,7 +78,6 @@ class SneakerAPI:
             data = response.json()
             # Assuming the API returns a list of products in a 'results' field
             products = data.get('hits', [])
-            print(products)
             return [SneakerProduct.from_api_response(product) for product in products]
             
         except requests.RequestException as e:
