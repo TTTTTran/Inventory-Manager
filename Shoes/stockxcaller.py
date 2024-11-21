@@ -114,6 +114,7 @@ def main():
     api = SneakerAPI()
     
     # Example 1: Get specific product
+    """ 
     product_id = input("Enter product ID (or press Enter to skip): ").strip()
     if product_id:
         product = api.get_product(product_id)
@@ -121,6 +122,7 @@ def main():
             print_product(product)
         else:
             print(f"Product not found: {product_id}")
+    """
     
     # Example 2: Search for products
     search_query = input("\nEnter SKU (or press Enter to skip): ").strip()
